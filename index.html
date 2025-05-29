@@ -1,101 +1,63 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="stylesheet" href="style.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calendrier Économique - FMA</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FMA - Calendrier Économique</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #0e0e0e;
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #0f0f0f;
       color: #ffffff;
       padding: 20px;
     }
-    .event {
-      background-color: #1c1c1c;
-      padding: 15px;
-      margin: 10px 0;
-      border-left: 5px solid #00b894;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
-    }
-    .event strong {
-      color: #00cec9;
-    }
-    h1 {
+
+    header {
       text-align: center;
-      color: #00b894;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #00ffcc;
+    }
+
+    .calendar-container {
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 0 25px rgba(0, 255, 200, 0.2);
+    }
+
+    iframe {
+      width: 100%;
+      height: 700px;
+      border: none;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 30px;
+      color: #aaa;
+      font-size: 0.9rem;
     }
   </style>
 </head>
 <body>
-  <h1>Calendrier Économique (exemple)</h1>
-  <div id="calendar">Chargement...</div>
+  <header>
+    <h1>📅 Calendrier Économique - FMA</h1>
+    <p>Les événements économiques majeurs du jour en un coup d'œil.</p>
+  </header>
 
-  <script>
-    const calendarEl = document.getElementById("calendar");
+  <div class="calendar-container">
+    <iframe 
+      src="https://www.investing.com/economic-calendar/" 
+      loading="lazy"
+    ></iframe>
+  </div>
 
-    const mockEvents = [
-      {
-        country: "USA",
-        date: new Date().toISOString().split("T")[0] + "T08:30:00",
-        event: "NFP - Création d'emplois non agricoles",
-        importance: "Haute",
-        actual: "253K",
-        forecast: "180K",
-        previous: "165K"
-      },
-      {
-        country: "EUR",
-        date: new Date().toISOString().split("T")[0] + "T10:00:00",
-        event: "Décision taux BCE",
-        importance: "Élevée",
-        actual: "4.25%",
-        forecast: "4.25%",
-        previous: "4.00%"
-      },
-      {
-        country: "UK",
-        date: new Date().toISOString().split("T")[0] + "T07:00:00",
-        event: "Inflation (CPI)",
-        importance: "Moyenne",
-        actual: "6.1%",
-        forecast: "6.3%",
-        previous: "6.5%"
-      },
-      {
-        country: "JPY",
-        date: new Date().toISOString().split("T")[0] + "T02:00:00",
-        event: "Taux d'intérêt BoJ",
-        importance: "Élevée",
-        actual: "-0.10%",
-        forecast: "-0.10%",
-        previous: "-0.10%"
-      }
-    ];
-
-    function afficherEvenements(events) {
-      if (!events.length) {
-        calendarEl.innerHTML = "<p>Aucun événement économique aujourd'hui.</p>";
-        return;
-      }
-
-      // Trier par date/heure
-      const sorted = events.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-      // Afficher les événements
-      calendarEl.innerHTML = sorted.map(event => `
-        <div class="event">
-          <div><strong>${event.country}</strong> - ${new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
-          <div>${event.event}</div>
-          <div>Importance : ${event.importance}</div>
-          <div>Actuel : ${event.actual} | Prévu : ${event.forecast} | Précédent : ${event.previous}</div>
-        </div>
-      `).join("");
-    }
-
-    afficherEvenements(mockEvents);
-  </script>
+  <footer>
+    FMA - Forex Macro Analyse | Créé par 708
+  </footer>
 </body>
 </html>
