@@ -1,0 +1,56 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMA - Forex Macro Analyse</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <h1>FMA</h1>
+        </div>
+        <div class="datetime">
+            <span id="clock"></span> <span class="date" id="date"></span>
+        </div>
+    </header>
+    <nav>
+        <ul>
+            <li>Accueil</li>
+            <li>Calendrier</li>
+            <li>Analyse</li>
+            <li>Paramètres</li>
+        </ul>
+    </nav>
+    <main>
+        <section class="calendar-header">
+            <div>Time</div>
+            <div>Pays</div>
+            <div>Devise</div>
+            <div>Impact</div>
+            <div>Event</div>
+            <div>High</div>
+            <div>Forecast</div>
+            <div>Low</div>
+            <div>Previous</div>
+            <div>Actual</div>
+        </section>
+        <section class="calendar-content">
+            <p>Les événements économiques apparaîtront ici...</p>
+        </section>
+    </main>
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = now.toLocaleDateString('fr-FR');
+            document.getElementById('clock').textContent = time;
+            document.getElementById('date').textContent = date;
+        }
+        setInterval(updateDateTime, 1000);
+        updateDateTime();
+    </script>
+</body>
+</html>
