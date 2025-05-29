@@ -1,143 +1,100 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Calendrier économique du jour</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calendrier Économique - FMA</title>
   <style>
-    /* CSS pour un design clair et moderne */
-    #calendar {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      max-width: 600px;
-      margin: 20px auto;
-      background: #f9f9f9;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 15px;
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #0e0e0e;
+      color: #ffffff;
+      padding: 20px;
     }
-
     .event {
-      background: #fff;
-      border-left: 6px solid #3b82f6; /* bleu vif */
-      padding: 12px 15px;
-      margin-bottom: 12px;
-      border-radius: 5px;
-      transition: box-shadow 0.3s ease;
+      background-color: #1c1c1c;
+      padding: 15px;
+      margin: 10px 0;
+      border-left: 5px solid #00b894;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0, 255, 128, 0.2);
     }
-
-    .event:hover {
-      box-shadow: 0 4px 12px rgba(59,130,246,0.3);
-    }
-
-    .event > div {
-      margin-bottom: 6px;
-      color: #333;
-    }
-
     .event strong {
-      color: #1e40af; /* bleu foncé */
-      font-weight: 700;
+      color: #00cec9;
     }
-
-    #calendar p {
+    h1 {
       text-align: center;
-      color: #666;
-      font-style: italic;
-      margin-top: 20px;
+      color: #00b894;
     }
   </style>
 </head>
 <body>
-  <h1 style="text-align:center; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">Calendrier économique du jour</h1>
-  <div id="calendar">
-    <!-- Les événements seront affichés ici -->
-  </div>
+  <h1>Calendrier Économique (exemple)</h1>
+  <div id="calendar">Chargement...</div>
 
   <script>
     const calendarEl = document.getElementById("calendar");
-    const apiKey = "ewsvAEiIAbLvKEYcBOCNvmh5kvPXjvD7";
 
-    function escapeHtml(text) {
-      return text
-        ? text.replace(/[&<>"']/g, (m) => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#39;',
-          }[m]))
-        : '';
-    }
-
-    async function fetchEconomicEvents() {
-      calendarEl.innerHTML = "<p>Chargement des événements...</p>";
-
-      const today = new Date().toISOString().split("T")[0];
-
-      try {
-        const res = await fetch(
-          `https://financialmodelingprep.com/api/v3/economic_calendar?from=${today}&to=${today}&apikey=${apiKey}`
-        );
-        if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-
-        const data = await res.json();
-
-        if (!Array.isArray(data)) throw new Error("Format de données inattendu");
-
-        const sorted = data.sort((a, b) => {
-          const dateA = new Date(a.date).getTime() || 0;
-          const dateB = new Date(b.date).getTime() || 0;
-          return dateA - dateB;
-        });
-
-        const now = new Date();
-
-        const pastEvents = sorted.filter(e => {
-          const eventDate = new Date(e.date);
-          return !isNaN(eventDate) && eventDate < now;
-        }).slice(-2);
-
-        const futureEvents = sorted.filter(e => {
-          const eventDate = new Date(e.date);
-          return !isNaN(eventDate) && eventDate >= now;
-        }).slice(0, 2);
-
-        const selectedEvents = [...pastEvents, ...futureEvents];
-
-        if (selectedEvents.length === 0) {
-          calendarEl.innerHTML = "<p>Aucun événement économique pour aujourd'hui.</p>";
-          return;
-        }
-
-        calendarEl.innerHTML = selectedEvents.map(event => {
-          const eventDateObj = new Date(event.date);
-          const eventTime = !isNaN(eventDateObj)
-            ? eventDateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            : 'Heure inconnue';
-
-          const country = escapeHtml(event.country || "Inconnu");
-          const eventName = escapeHtml(event.event || "Non spécifié");
-          const importance = escapeHtml(event.importance || "N/A");
-          const actual = escapeHtml(event.actual ?? "N/A");
-          const forecast = escapeHtml(event.forecast ?? "N/A");
-          const previous = escapeHtml(event.previous ?? "N/A");
-
-          return `
-            <div class="event">
-              <div><strong>${country}</strong> - ${eventTime}</div>
-              <div>${eventName}</div>
-              <div>Importance : ${importance}</div>
-              <div>Actuel : ${actual} | Prévu : ${forecast} | Précédent : ${previous}</div>
-            </div>
-          `;
-        }).join("");
-      } catch (err) {
-        console.error("Erreur API :", err);
-        calendarEl.innerHTML = "<p>Erreur lors du chargement des données.</p>";
+    const mockEvents = [
+      {
+        country: "USA",
+        date: new Date().toISOString().split("T")[0] + "T08:30:00",
+        event: "NFP - Création d'emplois non agricoles",
+        importance: "Haute",
+        actual: "253K",
+        forecast: "180K",
+        previous: "165K"
+      },
+      {
+        country: "EUR",
+        date: new Date().toISOString().split("T")[0] + "T10:00:00",
+        event: "Décision taux BCE",
+        importance: "Élevée",
+        actual: "4.25%",
+        forecast: "4.25%",
+        previous: "4.00%"
+      },
+      {
+        country: "UK",
+        date: new Date().toISOString().split("T")[0] + "T07:00:00",
+        event: "Inflation (CPI)",
+        importance: "Moyenne",
+        actual: "6.1%",
+        forecast: "6.3%",
+        previous: "6.5%"
+      },
+      {
+        country: "JPY",
+        date: new Date().toISOString().split("T")[0] + "T02:00:00",
+        event: "Taux d'intérêt BoJ",
+        importance: "Élevée",
+        actual: "-0.10%",
+        forecast: "-0.10%",
+        previous: "-0.10%"
       }
+    ];
+
+    function afficherEvenements(events) {
+      if (!events.length) {
+        calendarEl.innerHTML = "<p>Aucun événement économique aujourd'hui.</p>";
+        return;
+      }
+
+      // Trier par date/heure
+      const sorted = events.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+      // Afficher les événements
+      calendarEl.innerHTML = sorted.map(event => `
+        <div class="event">
+          <div><strong>${event.country}</strong> - ${new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+          <div>${event.event}</div>
+          <div>Importance : ${event.importance}</div>
+          <div>Actuel : ${event.actual} | Prévu : ${event.forecast} | Précédent : ${event.previous}</div>
+        </div>
+      `).join("");
     }
 
-    fetchEconomicEvents();
+    afficherEvenements(mockEvents);
   </script>
 </body>
 </html>
