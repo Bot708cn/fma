@@ -1,0 +1,59 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FMA - Calendrier Économique</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+        header { background: #00bfff; padding: 1em 0; text-align: center; color: white; font-size: 1.5em; }
+        .date-line { background: #fff; text-align: center; padding: 0.5em; font-size: 1.2em; border-bottom: 1px solid #ddd; }
+        .date-line span { color: #005288; margin-left: 0.5em; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1em; background: white; }
+        th, td { padding: 0.8em; border: 1px solid #ddd; text-align: center; font-size: 0.9em; }
+        th { background: #e6f7ff; }
+    </style>
+</head>
+<body>
+    <header><img src="logo.png" alt="Logo FMA" style="height: 40px; vertical-align: middle;"> FMA Calendrier</header>
+    <div class="date-line">Heure actuelle : <span id="datetime"></span></div>
+    <table>
+        <thead>
+            <tr>
+                <th>Time</th>
+                <th>Pays</th>
+                <th>Devise</th>
+                <th>Impact</th>
+                <th>Évènement</th>
+                <th>High</th>
+                <th>Forecast</th>
+                <th>Low</th>
+                <th>Previous</th>
+                <th>Actual</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>08:30</td>
+                <td><img src="us_flag.png" alt="USA" width="20"></td>
+                <td>USD</td>
+                <td>🌐</td>
+                <td>Inflation CPI mensuel</td>
+                <td>0.4%</td>
+                <td>0.3%</td>
+                <td>0.2%</td>
+                <td>0.2%</td>
+                <td>0.4%</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <script>
+        const now = new Date();
+        const formatted = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) + ' [' + 
+                          now.toLocaleDateString('fr-FR') + ']';
+        document.getElementById("datetime").textContent = formatted;
+    </script>
+</body>
+</html>
