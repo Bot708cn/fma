@@ -1,161 +1,161 @@
-<!DOCTYPE html>
-<html lang="fr">
+<!DOCTYPE html><html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>FMA - Calendrier Économique</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FMA - Calendrier Économique</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #000000;
-      color: #ffffff;
+      background-color: #0d0d0d;
+      color: white;
+      font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
     }
-
-    .header {
-      background-color: #add8e6; /* bleu clair */
-      padding: 15px;
+    header {
+      background-color: #00bfff;
+      padding: 10px;
       text-align: center;
     }
-
-    .header h1 {
+    header h1 {
       margin: 0;
-      color: #00264d; /* bleu foncé */
-      font-size: 2rem;
-      letter-spacing: 2px;
+      color: #001f3f;
     }
-
-    .table-container {
+    .calendar-container {
       padding: 20px;
-      overflow-x: auto;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
-      min-width: 900px;
-      background-color: #111;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    th, td {
-      padding: 12px 15px;
-      text-align: left;
-      border-bottom: 1px solid #333;
-    }
-
-    th {
-      background-color: #222;
-      color: #00ffc8;
-      text-transform: uppercase;
-      font-size: 0.9rem;
-    }
-
-    td.flag {
-      font-size: 1.5rem;
-    }
-
-    tr:hover {
       background-color: #1a1a1a;
     }
-
-    footer {
+    th, td {
+      padding: 10px;
       text-align: center;
-      color: #777;
-      padding: 20px;
-      font-size: 0.8rem;
+      border: 1px solid #333;
+    }
+    th {
+      background-color: #00bfff;
+      color: black;
+    }
+    .flag {
+      vertical-align: middle;
+      margin-right: 5px;
+    }
+    .load-more {
+      margin-top: 20px;
+      text-align: center;
+    }
+    .load-more button {
+      background-color: #00bfff;
+      color: #001f3f;
+      border: none;
+      padding: 10px 20px;
+      cursor: pointer;
+      font-weight: bold;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
+  <header>
+    <h1>FMA</h1>
+  </header>
+  <div class="calendar-container">
+    <div id="calendar"></div>
+    <div class="load-more">
+      <button onclick="loadAllEvents()">Charger plus d'événements</button>
+    </div>
+  </div>  <script>
+    const calendarEl = document.getElementById("calendar");
+    const apiKey = "af2bb33418ab4b9:qlgq6yu8qvwq7as";
+    let fullEventList = [];
+    let displayedCount = 0;
+    const step = 10; // Nombre d'événements à afficher à chaque clic
 
-  <div class="header">
-    <h1>FMA - Calendrier Économique</h1>
-  </div>
-
-  <div class="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Heure</th>
-          <th>Pays</th>
-          <th>Drapeau</th>
-          <th>Événement</th>
-          <th>Impact</th>
-          <th>Actuel</th>
-          <th>Prévu</th>
-          <th>Précédent</th>
-        </tr>
-      </thead>
-      <tbody id="calendar-body">
-        <tr><td colspan="8">Chargement...</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <footer>© 2025 - Forex Macro Analyse (FMA) par 708</footer>
-
-  <script>
-    const API_KEY = "af2bb33418ab4b9:qlgq6yu8qvwq7as";
-    const calendarBody = document.getElementById("calendar-body");
-
-    fetch(`https://api.tradingeconomics.com/calendar?c=${API_KEY}`)
-      .then(res => res.json())
-      .then(data => {
-        calendarBody.innerHTML = "";
-
-        const today = new Date().toISOString().split("T")[0];
-        const todayEvents = data.filter(e => e.Date && e.Date.startsWith(today));
-
-        if (todayEvents.length === 0) {
-          calendarBody.innerHTML = `<tr><td colspan="8">Aucun événement aujourd'hui.</td></tr>`;
-          return;
-        }
-
-        todayEvents.forEach(ev => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td>${new Date(ev.Date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</td>
-            <td>${ev.Country}</td>
-            <td class="flag">${getFlagEmoji(ev.Country)}</td>
-            <td>${ev.Event}</td>
-            <td>${impactToIcons(ev.Importance)}</td>
-            <td>${ev.Actual ?? 'N/A'}</td>
-            <td>${ev.Forecast ?? 'N/A'}</td>
-            <td>${ev.Previous ?? 'N/A'}</td>
-          `;
-          calendarBody.appendChild(row);
-        });
-      })
-      .catch(err => {
-        console.error(err);
-        calendarBody.innerHTML = `<tr><td colspan="8">Erreur de chargement des données.</td></tr>`;
-      });
-
-    function getFlagEmoji(country) {
-      const flags = {
-        "United States": "🇺🇸",
-        "Germany": "🇩🇪",
-        "France": "🇫🇷",
-        "Italy": "🇮🇹",
-        "Canada": "🇨🇦",
-        "United Kingdom": "🇬🇧",
-        "Japan": "🇯🇵",
-        "China": "🇨🇳",
-        "Australia": "🇦🇺",
-        "Euro Area": "🇪🇺"
+    function getFlagURL(country) {
+      const countryCodes = {
+        "United States": "us",
+        "Euro Area": "eu",
+        "Germany": "de",
+        "France": "fr",
+        "Italy": "it",
+        "Spain": "es",
+        "United Kingdom": "gb",
+        "Japan": "jp",
+        "Canada": "ca",
+        "China": "cn",
+        "Australia": "au",
+        "New Zealand": "nz",
+        "Switzerland": "ch"
+        // Ajoute d'autres pays si nécessaire
       };
-      return flags[country] || "🏳️";
+      const code = countryCodes[country] || "un";
+      return `https://flagcdn.com/24x18/${code}.png`;
     }
 
-    function impactToIcons(impact) {
-      if (impact === 3) return "💥💥💥";
-      if (impact === 2) return "💥💥";
-      if (impact === 1) return "💥";
-      return "–";
+    async function fetchEconomicEvents() {
+      const today = new Date().toISOString().split("T")[0];
+      try {
+        const res = await fetch(`https://financialmodelingprep.com/api/v3/economic_calendar?from=${today}&to=${today}&apikey=${apiKey}`);
+        const data = await res.json();
+
+        if (!Array.isArray(data)) throw new Error("Données non valides");
+
+        fullEventList = data.sort((a, b) => new Date(a.date) - new Date(b.date));
+        displayedCount = 0;
+        displayNextEvents();
+      } catch (err) {
+        console.error("Erreur API :", err);
+        calendarEl.innerHTML = "<p>Erreur lors du chargement des données.</p>";
+      }
     }
-  </script>
-</body>
+
+    function displayNextEvents() {
+      const toDisplay = fullEventList.slice(displayedCount, displayedCount + step);
+      displayedCount += step;
+
+      if (displayedCount === step) {
+        calendarEl.innerHTML = `
+          <table>
+            <thead>
+              <tr>
+                <th>Heure</th>
+                <th>Pays</th>
+                <th>Événement</th>
+                <th>Impact</th>
+                <th>Actuel</th>
+                <th>Prévu</th>
+                <th>Précédent</th>
+              </tr>
+            </thead>
+            <tbody id="calendar-body"></tbody>
+          </table>
+        `;
+      }
+
+      const tbody = document.getElementById("calendar-body");
+      toDisplay.forEach(event => {
+        const time = new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        const flag = `<img src="${getFlagURL(event.country)}" alt="flag" class="flag">`;
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${time}</td>
+          <td>${flag} ${event.country}</td>
+          <td>${event.event}</td>
+          <td>${event.importance}</td>
+          <td>${event.actual ?? 'N/A'}</td>
+          <td>${event.forecast ?? 'N/A'}</td>
+          <td>${event.previous ?? 'N/A'}</td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    function loadAllEvents() {
+      displayNextEvents();
+    }
+
+    fetchEconomicEvents();
+  </script></body>
 </html>
