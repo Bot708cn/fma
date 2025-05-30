@@ -2,47 +2,43 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>FMA - Calendrier Économique</title>
+  <title>FMA - Calendrier Éco</title>
   <style>
     body {
       background-color: #0d0d0d;
       color: white;
       font-family: Arial, sans-serif;
       margin: 0;
-      padding: 0;
     }
     header {
       background-color: #00bfff;
-      padding: 10px;
+      padding: 15px;
       text-align: center;
     }
     header h1 {
       margin: 0;
       color: #001f3f;
     }
-    .calendar-container {
-      padding: 20px;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 15px;
       background-color: #1a1a1a;
     }
     th, td {
       padding: 10px;
-      text-align: center;
       border: 1px solid #333;
+      text-align: center;
     }
     th {
       background-color: #00bfff;
       color: black;
     }
     .flag {
-      vertical-align: middle;
-      margin-right: 5px;
       width: 24px;
       height: 18px;
+      vertical-align: middle;
+      margin-right: 5px;
     }
   </style>
 </head>
@@ -50,97 +46,69 @@
   <header>
     <h1>FMA</h1>
   </header>
-  <div class="calendar-container">
-    <div id="calendar">Chargement...</div>
-  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Heure</th>
+        <th>Pays</th>
+        <th>Événement</th>
+        <th>Impact</th>
+        <th>Actuel</th>
+        <th>Prévu</th>
+        <th>Précédent</th>
+      </tr>
+    </thead>
+    <tbody id="calendar-body"></tbody>
+  </table>
 
   <script>
-    const calendarEl = document.getElementById("calendar");
     const apiKey = "af2bb33418ab4b9:qlgq6yu8qvwq7as";
+    const tbody = document.getElementById("calendar-body");
+
+    const countryFlags = {
+      "United States": "us", "Euro Area": "eu", "Germany": "de",
+      "France": "fr", "Italy": "it", "Spain": "es", "United Kingdom": "gb",
+      "Japan": "jp", "Canada": "ca", "China": "cn", "Australia": "au",
+      "New Zealand": "nz", "Switzerland": "ch", "Mexico": "mx",
+      "South Korea": "kr", "India": "in", "Brazil": "br", "Russia": "ru",
+      "Turkey": "tr"
+    };
 
     function getFlagURL(country) {
-      const countryCodes = {
-        "United States": "us",
-        "Euro Area": "eu",
-        "Germany": "de",
-        "France": "fr",
-        "Italy": "it",
-        "Spain": "es",
-        "United Kingdom": "gb",
-        "Japan": "jp",
-        "Canada": "ca",
-        "China": "cn",
-        "Australia": "au",
-        "New Zealand": "nz",
-        "Switzerland": "ch",
-        "Mexico": "mx",
-        "South Korea": "kr",
-        "India": "in",
-        "Brazil": "br",
-        "Russia": "ru",
-        "Turkey": "tr"
-      };
-      const code = countryCodes[country] || "un";
+      const code = countryFlags[country] || "un";
       return `https://flagcdn.com/24x18/${code}.png`;
     }
 
     async function fetchEconomicEvents() {
       const today = new Date().toISOString().split("T")[0];
+
       try {
         const res = await fetch(`https://financialmodelingprep.com/api/v3/economic_calendar?from=${today}&to=${today}&apikey=${apiKey}`);
         const data = await res.json();
 
-        if (!Array.isArray(data)) throw new Error("Données non valides");
+        if (!Array.isArray(data)) return;
 
-        const events = data.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (events.length === 0) {
-          calendarEl.innerHTML = "<p>Aucun événement économique pour aujourd'hui.</p>";
-          return;
-        }
-
-        calendarEl.innerHTML = `
-          <table>
-            <thead>
-              <tr>
-                <th>Heure</th>
-                <th>Pays</th>
-                <th>Événement</th>
-                <th>Impact</th>
-                <th>Actuel</th>
-                <th>Prévu</th>
-                <th>Précédent</th>
-              </tr>
-            </thead>
-            <tbody id="calendar-body"></tbody>
-          </table>
-        `;
-
-        const tbody = document.getElementById("calendar-body");
-
-        events.forEach(event => {
-          const time = new Date(event.date).toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit'
-          });
-          const flag = `<img src="${getFlagURL(event.country)}" alt="flag" class="flag">`;
-
+        data.sort((a, b) => new Date(a.date) - new Date(b.date)).forEach(event => {
+          const time = new Date(event.date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+          const flagURL = getFlagURL(event.country);
           const row = document.createElement("tr");
+
           row.innerHTML = `
             <td>${time}</td>
-            <td>${flag} ${event.country}</td>
+            <td><img src="${flagURL}" class="flag" alt="flag"> ${event.country}</td>
             <td>${event.event}</td>
             <td>${event.importance}</td>
-            <td>${event.actual ?? 'N/A'}</td>
-            <td>${event.forecast ?? 'N/A'}</td>
-            <td>${event.previous ?? 'N/A'}</td>
+            <td>${event.actual ?? "N/A"}</td>
+            <td>${event.forecast ?? "N/A"}</td>
+            <td>${event.previous ?? "N/A"}</td>
           `;
+
           tbody.appendChild(row);
         });
-
-      } catch (err) {
-        console.error("Erreur API :", err);
-        calendarEl.innerHTML = "<p>Erreur lors du chargement des données.</p>";
+      } catch (e) {
+        // Ne rien afficher, éviter les messages d'erreur
+        console.warn("Erreur récupérée (ignorée) :", e);
       }
     }
 
