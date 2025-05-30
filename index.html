@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Calendrier Économique - FMA</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title>FMA - Calendrier Économique</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #1e1e2f;
+      background-color: #000000;
       color: #ffffff;
-      padding: 20px;
+      margin: 0;
+      padding: 0;
     }
 
-    h1 {
+    .header {
+      background-color: #add8e6; /* bleu clair */
+      padding: 15px;
       text-align: center;
-      color: #00ffc8;
-      margin-bottom: 30px;
+    }
+
+    .header h1 {
+      margin: 0;
+      color: #00264d; /* bleu foncé */
+      font-size: 2rem;
+      letter-spacing: 2px;
     }
 
     .table-container {
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 16px;
-      padding: 10px;
+      padding: 20px;
       overflow-x: auto;
     }
 
@@ -29,37 +35,46 @@
       width: 100%;
       border-collapse: collapse;
       min-width: 900px;
+      background-color: #111;
+      border-radius: 12px;
+      overflow: hidden;
     }
 
     th, td {
-      padding: 12px;
+      padding: 12px 15px;
       text-align: left;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      border-bottom: 1px solid #333;
     }
 
     th {
+      background-color: #222;
       color: #00ffc8;
-      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.9rem;
     }
 
     td.flag {
-      font-size: 1.4rem;
+      font-size: 1.5rem;
     }
 
     tr:hover {
-      background-color: rgba(255, 255, 255, 0.08);
+      background-color: #1a1a1a;
     }
 
     footer {
       text-align: center;
-      margin-top: 20px;
-      font-size: 0.9rem;
-      color: #aaa;
+      color: #777;
+      padding: 20px;
+      font-size: 0.8rem;
     }
   </style>
 </head>
 <body>
-  <h1>📅 FMA - Calendrier Économique du Jour</h1>
+
+  <div class="header">
+    <h1>FMA - Calendrier Économique</h1>
+  </div>
+
   <div class="table-container">
     <table>
       <thead>
@@ -75,11 +90,12 @@
         </tr>
       </thead>
       <tbody id="calendar-body">
-        <tr><td colspan="8">Chargement des événements...</td></tr>
+        <tr><td colspan="8">Chargement...</td></tr>
       </tbody>
     </table>
   </div>
-  <footer>© 2025 - Forex Macro Analyse par 708</footer>
+
+  <footer>© 2025 - Forex Macro Analyse (FMA) par 708</footer>
 
   <script>
     const API_KEY = "af2bb33418ab4b9:qlgq6yu8qvwq7as";
@@ -88,13 +104,13 @@
     fetch(`https://api.tradingeconomics.com/calendar?c=${API_KEY}`)
       .then(res => res.json())
       .then(data => {
-        calendarBody.innerHTML = ""; // Vider les anciennes données
+        calendarBody.innerHTML = "";
 
         const today = new Date().toISOString().split("T")[0];
         const todayEvents = data.filter(e => e.Date && e.Date.startsWith(today));
 
         if (todayEvents.length === 0) {
-          calendarBody.innerHTML = `<tr><td colspan="8">Aucun événement économique aujourd'hui.</td></tr>`;
+          calendarBody.innerHTML = `<tr><td colspan="8">Aucun événement aujourd'hui.</td></tr>`;
           return;
         }
 
