@@ -1,63 +1,145 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FMA - Calendrier Économique</title>
+  <meta charset="UTF-8">
+  <title>Calendrier Économique - FMA</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #0f0f0f;
+      background: #1e1e2f;
       color: #ffffff;
       padding: 20px;
     }
 
-    header {
+    h1 {
       text-align: center;
+      color: #00ffc8;
       margin-bottom: 30px;
     }
 
-    h1 {
-      font-size: 2rem;
-      color: #00ffcc;
+    .table-container {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px;
+      padding: 10px;
+      overflow-x: auto;
     }
 
-    .calendar-container {
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 0 25px rgba(0, 255, 200, 0.2);
-    }
-
-    iframe {
+    table {
       width: 100%;
-      height: 700px;
-      border: none;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    th {
+      color: #00ffc8;
+      font-weight: 600;
+    }
+
+    td.flag {
+      font-size: 1.4rem;
+    }
+
+    tr:hover {
+      background-color: rgba(255, 255, 255, 0.08);
     }
 
     footer {
       text-align: center;
-      margin-top: 30px;
-      color: #aaa;
+      margin-top: 20px;
       font-size: 0.9rem;
+      color: #aaa;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>📅 Calendrier Économique - FMA</h1>
-    <p>Les événements économiques majeurs du jour en un coup d'œil.</p>
-  </header>
-
-  <div class="calendar-container">
-    <iframe 
-      src="https://www.investing.com/economic-calendar/" 
-      loading="lazy"
-    ></iframe>
+  <h1>📅 FMA - Calendrier Économique du Jour</h1>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Heure</th>
+          <th>Pays</th>
+          <th>Drapeau</th>
+          <th>Événement</th>
+          <th>Impact</th>
+          <th>Actuel</th>
+          <th>Prévu</th>
+          <th>Précédent</th>
+        </tr>
+      </thead>
+      <tbody id="calendar-body">
+        <tr><td colspan="8">Chargement des événements...</td></tr>
+      </tbody>
+    </table>
   </div>
+  <footer>© 2025 - Forex Macro Analyse par 708</footer>
 
-  <footer>
-    FMA - Forex Macro Analyse | Créé par 708
-  </footer>
+  <script>
+    const API_KEY = "af2bb33418ab4b9:qlgq6yu8qvwq7as";
+    const calendarBody = document.getElementById("calendar-body");
+
+    fetch(`https://api.tradingeconomics.com/calendar?c=${API_KEY}`)
+      .then(res => res.json())
+      .then(data => {
+        calendarBody.innerHTML = ""; // Vider les anciennes données
+
+        const today = new Date().toISOString().split("T")[0];
+        const todayEvents = data.filter(e => e.Date && e.Date.startsWith(today));
+
+        if (todayEvents.length === 0) {
+          calendarBody.innerHTML = `<tr><td colspan="8">Aucun événement économique aujourd'hui.</td></tr>`;
+          return;
+        }
+
+        todayEvents.forEach(ev => {
+          const row = document.createElement("tr");
+          row.innerHTML = `
+            <td>${new Date(ev.Date).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</td>
+            <td>${ev.Country}</td>
+            <td class="flag">${getFlagEmoji(ev.Country)}</td>
+            <td>${ev.Event}</td>
+            <td>${impactToIcons(ev.Importance)}</td>
+            <td>${ev.Actual ?? 'N/A'}</td>
+            <td>${ev.Forecast ?? 'N/A'}</td>
+            <td>${ev.Previous ?? 'N/A'}</td>
+          `;
+          calendarBody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        calendarBody.innerHTML = `<tr><td colspan="8">Erreur de chargement des données.</td></tr>`;
+      });
+
+    function getFlagEmoji(country) {
+      const flags = {
+        "United States": "🇺🇸",
+        "Germany": "🇩🇪",
+        "France": "🇫🇷",
+        "Italy": "🇮🇹",
+        "Canada": "🇨🇦",
+        "United Kingdom": "🇬🇧",
+        "Japan": "🇯🇵",
+        "China": "🇨🇳",
+        "Australia": "🇦🇺",
+        "Euro Area": "🇪🇺"
+      };
+      return flags[country] || "🏳️";
+    }
+
+    function impactToIcons(impact) {
+      if (impact === 3) return "💥💥💥";
+      if (impact === 2) return "💥💥";
+      if (impact === 1) return "💥";
+      return "–";
+    }
+  </script>
 </body>
 </html>
